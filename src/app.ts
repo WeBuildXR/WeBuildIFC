@@ -2,7 +2,8 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
 import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
-import * as GUI from "@babylonjs/gui"
+import * as GUI from "@babylonjs/gui";
+import * as IFCLOADER from "./ifcloader";
 class App {
     public async createScene() {
         // create the canvas html element and attach it to the webpage
@@ -197,4 +198,6 @@ class App {
 }
 var app = new App();
 app.createContent();
+var ifc = new IFCLOADER.IfcLoader();
+ifc.load("url");
 

@@ -80,6 +80,10 @@
         "dom",
         "es6"
     ],
-    "rootDir": "src"
+    "rootDir": "src",
+    // "include": ["src/**/*"]
+    // "files": [
+    //   "ifcloader.ts"
+    // ]
   }
 }

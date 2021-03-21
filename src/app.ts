@@ -1,7 +1,8 @@
-import "@babylonjs/core/Debug/debugLayer";
-import "@babylonjs/inspector";
+// import "@babylonjs/core/Debug/debugLayer";
+// import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
+// import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core" ;
+import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import * as IFCLOADER from "./ifcloader";
 import sampleIfc from './wall-with-opening-and-window.ifc';
@@ -16,20 +17,20 @@ class App {
         document.body.appendChild(canvas);
 
         // initialize babylon scene and engine
-        var engine = new Engine(canvas, true);
-        var scene = new Scene(engine);
-        var camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-        camera.setTarget(Vector3.Zero());
+        var engine = new BABYLON.Engine(canvas, true);
+        var scene = new BABYLON.Scene(engine);
+        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+        camera.setTarget(BABYLON.Vector3.Zero());
         camera.attachControl(canvas, true);
-        var light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene);
+        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
         light.intensity = 0.7;
-        var sphere = Mesh.CreateSphere("sphere1", 16, 2, scene);
+        var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
         sphere.position.y = 1;
         const env = scene.createDefaultEnvironment();
         // here we add XR support
         if (env != null) {
             const xr = await scene.createDefaultXRExperienceAsync({
-                floorMeshes: [<AbstractMesh>env.ground],
+                floorMeshes: [<BABYLON.AbstractMesh>env.ground],
             });
         }
         return scene;
@@ -50,7 +51,7 @@ class App {
             scene,
             sceneToRender;
         const createDefaultEngine = function () {
-            return new Engine(canvas, true, {
+            return new BABYLON.Engine(canvas, true, {
                 preserveDrawingBuffer: true,
                 stencil: true
             });
@@ -60,38 +61,38 @@ class App {
         const createScene = async function () {
 
             // Create a basic Babylon Scene object.
-            let scene = new Scene(engine);
+            let scene = new BABYLON.Scene(engine);
 
             // Create and position a free camera.
-            let camera = new FreeCamera('camera-1', new Vector3(0, 5, -10), scene);
+            let camera = new BABYLON.FreeCamera('camera-1', new BABYLON.Vector3(0, 5, -10), scene);
 
             // Point the camera at scene origin.
-            camera.setTarget(Vector3.Zero());
+            camera.setTarget(BABYLON.Vector3.Zero());
 
             // Attach camera to canvas.
             camera.attachControl(canvas, true);
 
             // Create a light and aim it vertically to the sky (0, 1, 0).
-            let light = new HemisphericLight('light-1', new Vector3(0, 1, 0), scene);
+            let light = new BABYLON.HemisphericLight('light-1', new BABYLON.Vector3(0, 1, 0), scene);
 
             // Set light intensity to a lower value (default is 1).
             light.intensity = 0.5;
 
             // Add one of Babylon's built-in sphere shapes.
-            let sphere = MeshBuilder.CreateSphere('sphere-1', {
+            let sphere = BABYLON.MeshBuilder.CreateSphere('sphere-1', {
                 diameter: 2,
                 segments: 32
             }, scene);
 
             // Position the sphere up by half of its height.
             sphere.position.y = 1;
-            var mat = new StandardMaterial("mat", scene);
-            mat.diffuseColor = new Color3(0, 1, 0);
+            var mat = new BABYLON.StandardMaterial("mat", scene);
+            mat.diffuseColor = new BABYLON.Color3(0, 1, 0);
             sphere.material = mat;
 
             // GUI
-            var plane = Mesh.CreatePlane("plane", 1, scene);
-            plane.position = new Vector3(1.4, 1.5, 0.4)
+            var plane = BABYLON.Mesh.CreatePlane("plane", 1, scene);
+            plane.position = new BABYLON.Vector3(1.4, 1.5, 0.4)
             var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
             var panel = new GUI.StackPanel();
             advancedTexture.addControl(panel);
@@ -110,7 +111,7 @@ class App {
                 picker.width = "350px";
                 picker.onValueChangedObservable.add(function (value) {
                     if (sphere != null && sphere.material != null) {
-                        (<StandardMaterial>sphere.material).diffuseColor.copyFrom(value);
+                        (<BABYLON.StandardMaterial>sphere.material).diffuseColor.copyFrom(value);
                     }
                 });
             }
@@ -125,7 +126,7 @@ class App {
             // var xrHelper = null;
             if (env != null) {
                 const xrHelper = await scene.createDefaultXRExperienceAsync({
-                    floorMeshes: [<AbstractMesh>env.ground],
+                    floorMeshes: [<BABYLON.AbstractMesh>env.ground],
                 });
                 // const xrHelper = await scene.createDefaultXRExperienceAsync();
                 if (!xrHelper.baseExperience) {
@@ -169,7 +170,7 @@ class App {
         await ifc.initialize();
 
         // ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
-        ifc.load("wall-with-opening-and-window.ifc", sampleIfc);
+        ifc.load("wall-with-opening-and-window.ifc", sampleIfc, sceneToRender);
     }
     constructor() {
         // create the canvas html element and attach it to the webpage

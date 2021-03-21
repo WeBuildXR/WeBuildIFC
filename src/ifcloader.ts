@@ -1,7 +1,8 @@
-import "@babylonjs/core/Debug/debugLayer";
-import "@babylonjs/inspector";
+// import "@babylonjs/core/Debug/debugLayer";
+// import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
+// import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import * as WEBIFC from "web-ifc/web-ifc-api"
 
 // Since webpack will change the name and potentially the path of the 
@@ -52,7 +53,7 @@ export class IfcLoader {
 
 
     // async load(url, onLoad, onProgress, onError) {
-    async load(name, file) {
+    async load(name, file, scene) {
         var scope = this;
 
         await this.ifcAPI.Init();
@@ -60,7 +61,7 @@ export class IfcLoader {
         console.log("File length: " + file.length);
 
         // var buffer = await this.loadFromUrl(url, this)
-        this.parse(name, file);
+        return this.parse(name, file, scene);
 
         // var loader = new THREE.FileLoader(scope.manager);
         // loader.setPath(scope.path);
@@ -87,24 +88,27 @@ export class IfcLoader {
         // );
     }
 
-    async parse(url, buffer) {
+    async parse(url, buffer, scene) {
         // var data = new Uint8Array(buffer);
         var modelID = this.ifcAPI.OpenModel(url, buffer);
-        return this.loadAllGeometry(modelID);
+        return this.loadAllGeometry(modelID, scene);
     }
 
-    async loadAllGeometry(modelID) {
-        var flatMeshes = this.getFlatMeshes(modelID);
+    async loadAllGeometry(modelID, scene) {
+        var flatMeshes = await this.getFlatMeshes(modelID);
+
+        var mainObject = new BABYLON.Mesh("custom", scene);
+
         // var mainObject = new THREE.Object3D();
-        // for (var i = 0; i < flatMeshes.size(); i++) {
-        //     var placedGeometries = flatMeshes.get(i).geometries;
-        //     for (var j = 0; j < placedGeometries.size(); j++) {
-        //         const mesh = getPlacedGeometry(modelID, placedGeometries.get(j))
-        //         mesh.expressID = flatMeshes.get(i).expressID;
-        //         mainObject.add(mesh);
-        //     }
-        // }
-        // return mainObject;
+        for (var i = 0; i < flatMeshes.size(); i++) {
+            var placedGeometries = flatMeshes.get(i).geometries;
+            for (var j = 0; j < placedGeometries.size(); j++) {
+                const mesh = await this.getPlacedGeometry(modelID, placedGeometries.get(j), scene)
+                mesh.name = flatMeshes.get(i).expressID.toString();
+                mesh.parent = mainObject;
+            }
+        }
+        return mainObject;
     }
 
     async getFlatMeshes(modelID) {
@@ -112,46 +116,88 @@ export class IfcLoader {
         return flatMeshes;
     }
 
-    async getPlacedGeometry(modelID, placedGeometry) {
-        var geometry = this.getBufferGeometry(modelID, placedGeometry);
-        var material = this.getMeshMaterial(placedGeometry.color);
+    async getPlacedGeometry(modelID, placedGeometry, scene) {
+        var geometry = await this.getBufferGeometry(modelID, placedGeometry);
+        var material = await this.getMeshMaterial(placedGeometry.color, scene);
+
+        var mesh = new BABYLON.Mesh("custom", scene);
+ 
+        geometry.applyToMesh(mesh);
+        mesh.material = material;
+
         // var mesh = new THREE.Mesh(geometry, material);
-        // mesh.matrix = getMeshMatrix(placedGeometry.flatTransformation);
+        // mesh.translate = getMeshMatrix(placedGeometry.flatTransformation);
+        mesh.translate = placedGeometry.flatTransformation;
         // mesh.matrixAutoUpdate = false;
-        // return mesh;
+        return mesh;
     }
 
     async getBufferGeometry(modelID, placedGeometry) {
         var geometry = this.ifcAPI.GetGeometry(modelID, placedGeometry.geometryExpressID);
-        var verts = this.ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
+        var rightverts = this.ifcAPI.GetVertexArray(geometry.GetVertexData(), geometry.GetVertexDataSize());
         var indices = this.ifcAPI.GetIndexArray(geometry.GetIndexData(), geometry.GetIndexDataSize());
-        var bufferGeometry = this.ifcGeometryToBuffer(verts, indices);
-        return bufferGeometry;
+        // var bufferGeometry = this.ifcGeometryToBuffer(verts, indices);
+        var vertexData = new BABYLON.VertexData();
+        vertexData.positions = this.transformVerts(rightverts);
+        vertexData.normals = this.transformNormals(rightverts);
+        vertexData.indices = indices; 
+        // return bufferGeometry;
+        return vertexData;
     }
 
-    async getMeshMaterial(color) {
+    transformVerts(verts) {
+        var newverts = new Array(Math.floor(verts.length/2));
+        for (var i=0; i<verts.length/6; i++) {
+            console.log(verts[i*6+0] + " " + verts[i*6+1] + " " + verts[i*6+2] + "\n");
+            newverts[i*3+0] = -verts[i*6+1] * 0.001;            
+            newverts[i*3+1] = verts[i*6+2] * 0.001;            
+            newverts[i*3+2] = -verts[i*6+0] * 0.001;            
+        }
+        return newverts;
+    }
+
+    transformNormals(verts) {
+        var newnormals = new Array(Math.floor(verts.length/2));
+        for (var i=0; i<verts.length/6; i++) {
+            // console.log(verts[i*3+0] + " " + verts[i*3+1] + " " + verts[i*3+2] + "\n");
+            newnormals[i*3+0] = -verts[i*6+4] * 0.001;            
+            newnormals[i*3+1] = verts[i*6+5] * 0.001;            
+            newnormals[i*3+2] = -verts[i*6+3] * 0.001;            
+        }
+        return newnormals;
+    }
+
+    async getMeshMaterial(color, scene) {
         // var col = new THREE.Color(color.x, color.y, color.z);
+        var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
+
+        myMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1);
+        myMaterial.specularColor = new BABYLON.Color3(0.5, 0.6, 0.87);
+        myMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+        myMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
         // var material = new THREE.MeshPhongMaterial({ color: col, side: THREE.DoubleSide });
-        // material.transparent = color.w !== 1;
-        // if (material.transparent) material.opacity = color.w;
-        // return material;
+        // myMaterial.alpha = (color.w !== 1);
+        //  if (myMaterial.alpha != 0) myMaterial.opacity = color.w;
+        return myMaterial;
     }
 
-    async getMeshMatrix(matrix) {
-        // var mat = new THREE.Matrix4();
-        // mat.fromArray(matrix);
-        // // mat.elements[15 - 3] *= 0.001;
-        // // mat.elements[15 - 2] *= 0.001;
-        // // mat.elements[15 - 1] *= 0.001;
-        // return mat;
-    }
+    // async getMeshMatrix(matrix) {
+    //     var mat = new BABYLON.Matrix;
+    //     // var mat = new THREE.Matrix4();
+    //     // mat.setRowFromFloats(matrix);
+    //     // mat.fromArray(matrix);
+    //     // // mat.elements[15 - 3] *= 0.001;
+    //     // // mat.elements[15 - 2] *= 0.001;
+    //     // // mat.elements[15 - 1] *= 0.001;
+    //     // return mat;
+    // }
 
-    async ifcGeometryToBuffer(vertexData, indexData) {
-        // var geometry = new THREE.BufferGeometry();
-        // var buffer32 = new THREE.InterleavedBuffer(vertexData, 6);
-        // geometry.setAttribute('position', new THREE.InterleavedBufferAttribute(buffer32, 3, 0));
-        // geometry.setAttribute('normal', new THREE.InterleavedBufferAttribute(buffer32, 3, 3));
-        // geometry.setIndex(new THREE.BufferAttribute(indexData, 1));
-        // return geometry;
-    }
+//     async ifcGeometryToBuffer(vertexData, indexData) {
+//         // var geometry = new THREE.BufferGeometry();
+//         // var buffer32 = new THREE.InterleavedBuffer(vertexData, 6);
+//         // geometry.setAttribute('position', new THREE.InterleavedBufferAttribute(buffer32, 3, 0));
+//         // geometry.setAttribute('normal', new THREE.InterleavedBufferAttribute(buffer32, 3, 3));
+//         // geometry.setIndex(new THREE.BufferAttribute(indexData, 1));
+//         // return geometry;
+//     }
 }

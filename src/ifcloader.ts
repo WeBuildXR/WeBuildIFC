@@ -36,30 +36,31 @@ export class IfcLoader {
         await this.ifcAPI.Init();
     }
 
-    async loadFromUrl(url) {
-        var s = document.createElement("script");
-        s.src = url;
-        document.head.appendChild(s);
-        var createScene = function () {
-            //Scene set up code
-            s.onload = function () {
-                //any code calling on loaded file code
-            }
+    // async loadFromUrl(url, loader) {
+    //     var s = document.createElement("script");
+    //     s.src = url;
+    //     document.head.appendChild(s);
+    //     var createScene = function () {
+    //         //Scene set up code
+    //         s.onload = function () {
+    //             //any code calling on loaded file code
+    //         }
 
-            return createScene;
-        }
-    }
+    //         return createScene;
+    //     }
+    // }
 
 
     // async load(url, onLoad, onProgress, onError) {
-    async load(url) {
+    async load(name, file) {
         var scope = this;
 
         await this.ifcAPI.Init();
 
-        var buffer = await this.loadFromUrl(url)
+        console.log("File length: " + file.length);
 
-        await this.parse(buffer)
+        // var buffer = await this.loadFromUrl(url, this)
+        this.parse(name, file);
 
         // var loader = new THREE.FileLoader(scope.manager);
         // loader.setPath(scope.path);
@@ -86,9 +87,9 @@ export class IfcLoader {
         // );
     }
 
-    async parse(buffer) {
-        var data = new Uint8Array(buffer);
-        var modelID = this.ifcAPI.OpenModel('dummy.ifc', data);
+    async parse(url, buffer) {
+        // var data = new Uint8Array(buffer);
+        var modelID = this.ifcAPI.OpenModel(url, buffer);
         return this.loadAllGeometry(modelID);
     }
 

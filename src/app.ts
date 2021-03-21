@@ -4,6 +4,7 @@ import "@babylonjs/loaders/glTF";
 import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import * as IFCLOADER from "./ifcloader";
+import sampleIfc from './wall-with-opening-and-window.ifc';
 
 class App {
     public async createScene() {
@@ -166,8 +167,9 @@ class App {
 
         var ifc = new IFCLOADER.IfcLoader();
         await ifc.initialize();
-        ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
 
+        // ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
+        ifc.load("wall-with-opening-and-window.ifc", sampleIfc);
     }
     constructor() {
         // create the canvas html element and attach it to the webpage

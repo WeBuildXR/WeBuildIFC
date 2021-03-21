@@ -49,7 +49,11 @@ module.exports = {
 			{
                 test: /\.wasm?$/,
 				type: "webassembly/async"
-			}
+			},
+            {
+                test: /\.ifc?$/,
+                use: 'raw-loader',
+            },
             // {
             //     test: /\.(wasm)$/,
             //     loader: 'file-loader',

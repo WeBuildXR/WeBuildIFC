@@ -5,7 +5,7 @@ import "@babylonjs/loaders/glTF";
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import * as IFCLOADER from "./ifcloader";
-import sampleIfc from './wall-with-opening-and-window.ifc';
+import sampleIfc from './test.ifc';
 
 class App {
     public async createScene() {
@@ -79,16 +79,16 @@ class App {
             light.intensity = 0.5;
 
             // Add one of Babylon's built-in sphere shapes.
-            let sphere = BABYLON.MeshBuilder.CreateSphere('sphere-1', {
-                diameter: 2,
-                segments: 32
-            }, scene);
+            // let sphere = BABYLON.MeshBuilder.CreateSphere('sphere-1', {
+            //     diameter: 2,
+            //     segments: 32
+            // }, scene);
 
-            // Position the sphere up by half of its height.
-            sphere.position.y = 1;
-            var mat = new BABYLON.StandardMaterial("mat", scene);
-            mat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-            sphere.material = mat;
+            // // Position the sphere up by half of its height.
+            // sphere.position.y = 1;
+            // var mat = new BABYLON.StandardMaterial("mat", scene);
+            // mat.diffuseColor = new BABYLON.Color3(0, 1, 0);
+            // sphere.material = mat;
 
             // GUI
             var plane = BABYLON.Mesh.CreatePlane("plane", 1, scene);
@@ -104,17 +104,17 @@ class App {
             header.fontSize = "120"
             panel.addControl(header);
             var picker = new GUI.ColorPicker();
-            if (sphere != null && sphere.material != null) {
-                picker.value = mat.diffuseColor;
-                picker.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-                picker.height = "350px";
-                picker.width = "350px";
-                picker.onValueChangedObservable.add(function (value) {
-                    if (sphere != null && sphere.material != null) {
-                        (<BABYLON.StandardMaterial>sphere.material).diffuseColor.copyFrom(value);
-                    }
-                });
-            }
+            // if (sphere != null && sphere.material != null) {
+            //     picker.value = mat.diffuseColor;
+            //     picker.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            //     picker.height = "350px";
+            //     picker.width = "350px";
+            //     picker.onValueChangedObservable.add(function (value) {
+            //         if (sphere != null && sphere.material != null) {
+            //             (<BABYLON.StandardMaterial>sphere.material).diffuseColor.copyFrom(value);
+            //         }
+            //     });
+            // }
 
             panel.addControl(picker);
 
@@ -170,7 +170,7 @@ class App {
         await ifc.initialize();
 
         // ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
-        ifc.load("wall-with-opening-and-window.ifc", sampleIfc, sceneToRender);
+        ifc.load("test.ifc", sampleIfc, sceneToRender);
     }
     constructor() {
         // create the canvas html element and attach it to the webpage

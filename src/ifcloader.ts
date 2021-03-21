@@ -98,7 +98,7 @@ export class IfcLoader {
         var flatMeshes = await this.getFlatMeshes(modelID);
 
         var mainObject = new BABYLON.Mesh("custom", scene);
-
+        mainObject.rotate(new BABYLON.Vector3(0,1,0),90);
         // var mainObject = new THREE.Object3D();
         for (var i = 0; i < flatMeshes.size(); i++) {
             var placedGeometries = flatMeshes.get(i).geometries;
@@ -148,10 +148,10 @@ export class IfcLoader {
     transformVerts(verts) {
         var newverts = new Array(Math.floor(verts.length/2));
         for (var i=0; i<verts.length/6; i++) {
-            console.log(verts[i*6+0] + " " + verts[i*6+1] + " " + verts[i*6+2] + "\n");
-            newverts[i*3+0] = -verts[i*6+1] * 0.001;            
-            newverts[i*3+1] = verts[i*6+2] * 0.001;            
-            newverts[i*3+2] = -verts[i*6+0] * 0.001;            
+            // console.log(verts[i*6+0] + " " + verts[i*6+1] + " " + verts[i*6+2] + "\n");
+            newverts[i*3+0] = -verts[i*6+1] //* 0.001;            
+            newverts[i*3+1] = verts[i*6+2] //* 0.001;            
+            newverts[i*3+2] = -verts[i*6+0] //* 0.001;            
         }
         return newverts;
     }
@@ -160,9 +160,9 @@ export class IfcLoader {
         var newnormals = new Array(Math.floor(verts.length/2));
         for (var i=0; i<verts.length/6; i++) {
             // console.log(verts[i*3+0] + " " + verts[i*3+1] + " " + verts[i*3+2] + "\n");
-            newnormals[i*3+0] = -verts[i*6+4] * 0.001;            
-            newnormals[i*3+1] = verts[i*6+5] * 0.001;            
-            newnormals[i*3+2] = -verts[i*6+3] * 0.001;            
+            newnormals[i*3+0] = -verts[i*6+4] //* 0.001;            
+            newnormals[i*3+1] = verts[i*6+5] //* 0.001;            
+            newnormals[i*3+2] = -verts[i*6+3] //* 0.001;            
         }
         return newnormals;
     }

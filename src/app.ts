@@ -4,6 +4,7 @@ import "@babylonjs/loaders/glTF";
 import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import * as IFCLOADER from "./ifcloader";
+
 class App {
     public async createScene() {
         // create the canvas html element and attach it to the webpage
@@ -33,7 +34,7 @@ class App {
         return scene;
     };
 
-    public createContent() {
+    public async createContent() {
         // Identify canvas element to script.
         //   let canvas = document.getElementById('canvas');
         // create the canvas html element and attach it to the webpage
@@ -163,6 +164,10 @@ class App {
             engine.resize();
         });
 
+        var ifc = new IFCLOADER.IfcLoader();
+        await ifc.initialize();
+        ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
+
     }
     constructor() {
         // create the canvas html element and attach it to the webpage
@@ -198,6 +203,5 @@ class App {
 }
 var app = new App();
 app.createContent();
-var ifc = new IFCLOADER.IfcLoader();
-ifc.load("url");
+
 

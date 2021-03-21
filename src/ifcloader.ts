@@ -4,6 +4,20 @@ import "@babylonjs/loaders/glTF";
 import { Engine, Scene, FreeCamera, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, AbstractMesh, StandardMaterial, Material, Color3 } from "@babylonjs/core";
 import * as WEBIFC from "web-ifc/web-ifc-api"
 
+// Since webpack will change the name and potentially the path of the 
+// `.wasm` file, we have to provide a `locateFile()` hook to redirect
+// to the appropriate URL.
+// More details: https://kripken.github.io/emscripten-site/docs/api_reference/module.html
+// const module = WEBIFC({
+//     locateFile(path) {
+//       if(path.endsWith('.wasm')) {
+//         return WEBIFC;
+//       }
+//       return path;
+//     }
+//   });
+  
+  
 // THREE.IfcLoader = function (manager) {
 //   THREE.Loader.call(this, manager);
 // };
@@ -17,6 +31,10 @@ export class IfcLoader {
 
     // THREE.IfcLoader.prototype = Object.assign(Object.create(THREE.Loader.prototype), {
     //   constructor: THREE.IfcLoader,
+
+    async initialize() {
+        await this.ifcAPI.Init();
+    }
 
     async loadFromUrl(url) {
         var s = document.createElement("script");

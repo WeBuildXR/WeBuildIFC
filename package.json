@@ -4,7 +4,8 @@
   "description": "Collaborative world building experience in WebXR, using Babylon.js",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "init": "cp node_modules/web-ifc/web-ifc.wasm src/lib/web-ifc.wasm",
+    "build": "webpack && cp node_modules/web-ifc/web-ifc.wasm .",
     "start": "webpack serve --port 8080"
   },
   "repository": {
@@ -31,6 +32,7 @@
   "dependencies": {
     "babylonjs": "^4.2.0",
     "babylonjs-gui": "^4.2.0",
+    "wasm-pack": "^0.9.1",
     "web-ifc": "0.0.17"
   }
 }

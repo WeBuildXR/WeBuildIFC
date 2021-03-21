@@ -64,7 +64,7 @@ class App {
             let scene = new BABYLON.Scene(engine);
 
             // Create and position a free camera.
-            let camera = new BABYLON.FreeCamera('camera-1', new BABYLON.Vector3(0, 5, -10), scene);
+            let camera = new BABYLON.FreeCamera('camera-1', new BABYLON.Vector3(0, 5, -20), scene);
 
             // Point the camera at scene origin.
             camera.setTarget(BABYLON.Vector3.Zero());
@@ -153,6 +153,7 @@ class App {
         scene.then(function (returnedScene) {
             sceneToRender = returnedScene;
         });
+        // scene.useRightHandedSystem;
 
         // Run render loop to render future frames.
         engine.runRenderLoop(function () {
@@ -168,6 +169,7 @@ class App {
 
         var ifc = new IFCLOADER.IfcLoader();
         await ifc.initialize();
+        // sceneToRender.useRightHandedSystem;
 
         // ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
         ifc.load("test.ifc", sampleIfc, sceneToRender);

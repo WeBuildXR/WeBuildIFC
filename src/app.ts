@@ -8,33 +8,33 @@ import * as IFCLOADER from "./ifcloader";
 import sampleIfc from './test.ifc';
 
 class App {
-    public async createScene() {
-        // create the canvas html element and attach it to the webpage
-        var canvas = document.createElement("canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.id = "gameCanvas";
-        document.body.appendChild(canvas);
+    // public async createScene() {
+    //     // create the canvas html element and attach it to the webpage
+    //     var canvas = document.createElement("canvas");
+    //     canvas.style.width = "100%";
+    //     canvas.style.height = "100%";
+    //     canvas.id = "gameCanvas";
+    //     document.body.appendChild(canvas);
 
-        // initialize babylon scene and engine
-        var engine = new BABYLON.Engine(canvas, true);
-        var scene = new BABYLON.Scene(engine);
-        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-        camera.setTarget(BABYLON.Vector3.Zero());
-        camera.attachControl(canvas, true);
-        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-        light.intensity = 0.7;
-        var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
-        sphere.position.y = 1;
-        const env = scene.createDefaultEnvironment();
-        // here we add XR support
-        if (env != null) {
-            const xr = await scene.createDefaultXRExperienceAsync({
-                floorMeshes: [<BABYLON.AbstractMesh>env.ground],
-            });
-        }
-        return scene;
-    };
+    //     // initialize babylon scene and engine
+    //     var engine = new BABYLON.Engine(canvas, true);
+    //     var scene = new BABYLON.Scene(engine);
+    //     var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+    //     camera.setTarget(BABYLON.Vector3.Zero());
+    //     camera.attachControl(canvas, true);
+    //     var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    //     light.intensity = 0.9;
+    //     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+    //     sphere.position.y = 1;
+    //     const env = scene.createDefaultEnvironment();
+    //     // here we add XR support
+    //     if (env != null) {
+    //         const xr = await scene.createDefaultXRExperienceAsync({
+    //             floorMeshes: [<BABYLON.AbstractMesh>env.ground],
+    //         });
+    //     }
+    //     return scene;
+    // };
 
     public async createContent() {
         // Identify canvas element to script.
@@ -72,38 +72,53 @@ class App {
             // Attach camera to canvas.
             camera.attachControl(canvas, true);
 
+                //Controls  WASD
+
+            camera.keysUp.push(87);
+            camera.keysDown.push(83);
+            camera.keysRight.push(68);
+            camera.keysLeft.push(65);
+
             // Create a light and aim it vertically to the sky (0, 1, 0).
             let light = new BABYLON.HemisphericLight('light-1', new BABYLON.Vector3(0, 1, 0), scene);
 
             // Set light intensity to a lower value (default is 1).
-            light.intensity = 0.5;
+            light.intensity = 0.8;
 
-            // Add one of Babylon's built-in sphere shapes.
+            var dirLight =  new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0,-1,-1), scene);
+            dirLight.position.y=8;
+            dirLight.position.z=2;
+            dirLight.intensity = 10;
+            var dirLight =  new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0,-1,1), scene);
+            dirLight.position.y=8;
+            dirLight.position.z=2;
+            dirLight.intensity = 10;
+            // // Add one of Babylon's built-in sphere shapes.
             // let sphere = BABYLON.MeshBuilder.CreateSphere('sphere-1', {
             //     diameter: 2,
             //     segments: 32
             // }, scene);
 
-            // // Position the sphere up by half of its height.
+            // // // Position the sphere up by half of its height.
             // sphere.position.y = 1;
             // var mat = new BABYLON.StandardMaterial("mat", scene);
             // mat.diffuseColor = new BABYLON.Color3(0, 1, 0);
             // sphere.material = mat;
 
-            // GUI
-            var plane = BABYLON.Mesh.CreatePlane("plane", 1, scene);
-            plane.position = new BABYLON.Vector3(1.4, 1.5, 0.4)
-            var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
-            var panel = new GUI.StackPanel();
-            advancedTexture.addControl(panel);
-            var header = new GUI.TextBlock();
-            header.text = "Color GUI";
-            header.height = "100px";
-            header.color = "white";
-            header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            header.fontSize = "120"
-            panel.addControl(header);
-            var picker = new GUI.ColorPicker();
+            // // GUI
+            // var plane = BABYLON.Mesh.CreatePlane("plane", 1, scene);
+            // plane.position = new BABYLON.Vector3(1.4, 1.5, 0.4)
+            // var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
+            // var panel = new GUI.StackPanel();
+            // advancedTexture.addControl(panel);
+            // var header = new GUI.TextBlock();
+            // header.text = "Color GUI";
+            // header.height = "100px";
+            // header.color = "white";
+            // header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // header.fontSize = "120"
+            // panel.addControl(header);
+            // var picker = new GUI.ColorPicker();
             // if (sphere != null && sphere.material != null) {
             //     picker.value = mat.diffuseColor;
             //     picker.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -116,27 +131,27 @@ class App {
             //     });
             // }
 
-            panel.addControl(picker);
+            // panel.addControl(picker);
 
 
             // Create a default environment for the scene.
             // scene.createDefaultEnvironment();
-            const env = scene.createDefaultEnvironment();
-            // here we add XR support
-            // var xrHelper = null;
-            if (env != null) {
-                const xrHelper = await scene.createDefaultXRExperienceAsync({
-                    floorMeshes: [<BABYLON.AbstractMesh>env.ground],
-                });
-                // const xrHelper = await scene.createDefaultXRExperienceAsync();
-                if (!xrHelper.baseExperience) {
-                    // XR support is unavailable.
-                    console.log('WebXR support is unavailable');
-                }
-            }
-            else {
-                console.log('WebXR environment is unavailable');
-            }
+            // const env = scene.createDefaultEnvironment();
+            // // here we add XR support
+            // // var xrHelper = null;
+            // if (env != null) {
+            //     const xrHelper = await scene.createDefaultXRExperienceAsync({
+            //         floorMeshes: [<BABYLON.AbstractMesh>env.ground],
+            //     });
+            //     // const xrHelper = await scene.createDefaultXRExperienceAsync();
+            //     if (!xrHelper.baseExperience) {
+            //         // XR support is unavailable.
+            //         console.log('WebXR support is unavailable');
+            //     }
+            // }
+            // else {
+            //     console.log('WebXR environment is unavailable');
+            // }
             // Initialize XR experience with default experience helper.
             // XR support is available; proceed.
             return scene;
@@ -169,7 +184,7 @@ class App {
 
         var ifc = new IFCLOADER.IfcLoader();
         await ifc.initialize();
-        // sceneToRender.useRightHandedSystem;
+        // sceneToRender.useRightHandedSystem;        
 
         // ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
         ifc.load("test.ifc", sampleIfc, sceneToRender);

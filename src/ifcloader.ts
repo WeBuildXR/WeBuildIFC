@@ -93,10 +93,10 @@ export class IfcLoader {
         // var data = new Uint8Array(buffer);
         // Matrix mat = [];
         var mToggle_YZ = [
-            -1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1];
+            1, 0, 0, 0,
+            0, -1, 0, 0,
+            0, 0, -1, 0,
+            0, 0, 0, -1];
 
         // var myz2 = [1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0];
         // var mToggle_YZ = [
@@ -204,7 +204,9 @@ export class IfcLoader {
 
         // mesh.scaling = new BABYLON.Vector3(-1,1,1);
         mesh.material = material;
-        mesh.overrideMaterialSideOrientation = BABYLON.Mesh.DOUBLESIDE;
+        // mesh.overrideMaterialSideOrientation = BABYLON.Mesh.DOUBLESIDE;
+        // mesh.createNormals(true);
+
         // this.showNormals(mesh, 0.1, BABYLON.Color3.White(), scene);
 
         // var mesh = new THREE.Mesh(geometry, material);
@@ -288,7 +290,9 @@ export class IfcLoader {
         // myMaterial.alpha = (color.w !== 1);
         //  if (myMaterial.alpha != 0) myMaterial.opacity = color.w;
         myMaterial.alpha = color.w;   
-        myMaterial.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
+        // myMaterial.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
+        myMaterial.backFaceCulling = false;
+
         // if (color.w !== 1) {
         //     myMaterial.transparencyMode = 1;
         //     myMaterial.alpha = color.w;   

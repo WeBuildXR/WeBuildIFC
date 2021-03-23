@@ -29,6 +29,8 @@ export class IfcLoader {
 
     }
 
+    // mainObject: BABYLON.Mesh;
+
     private ifcAPI = new WEBIFC.IfcAPI();
 
     // THREE.IfcLoader.prototype = Object.assign(Object.create(THREE.Loader.prototype), {
@@ -58,6 +60,8 @@ export class IfcLoader {
         var scope = this;
 
         await this.ifcAPI.Init();
+
+        // var buf = await file.arrayBuffer();
 
         console.log("File length: " + file.length);
 

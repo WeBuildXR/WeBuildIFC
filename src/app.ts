@@ -72,7 +72,7 @@ class App {
             // Attach camera to canvas.
             camera.attachControl(canvas, true);
 
-                //Controls  WASD
+            //Controls  WASD
 
             camera.keysUp.push(87);
             camera.keysDown.push(83);
@@ -85,13 +85,13 @@ class App {
             // Set light intensity to a lower value (default is 1).
             light.intensity = 0.8;
 
-            var dirLight =  new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0,-1,-1), scene);
-            dirLight.position.y=8;
-            dirLight.position.z=2;
+            var dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, -1), scene);
+            dirLight.position.y = 8;
+            dirLight.position.z = 2;
             dirLight.intensity = 10;
-            var dirLight =  new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0,-1,1), scene);
-            dirLight.position.y=8;
-            dirLight.position.z=2;
+            var dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, 1), scene);
+            dirLight.position.y = 8;
+            dirLight.position.z = 2;
             dirLight.intensity = 10;
             // // Add one of Babylon's built-in sphere shapes.
             // let sphere = BABYLON.MeshBuilder.CreateSphere('sphere-1', {
@@ -133,27 +133,6 @@ class App {
 
             // panel.addControl(picker);
 
-
-            // Create a default environment for the scene.
-            // scene.createDefaultEnvironment();
-            // const env = scene.createDefaultEnvironment();
-            // // here we add XR support
-            // // var xrHelper = null;
-            // if (env != null) {
-            //     const xrHelper = await scene.createDefaultXRExperienceAsync({
-            //         floorMeshes: [<BABYLON.AbstractMesh>env.ground],
-            //     });
-            //     // const xrHelper = await scene.createDefaultXRExperienceAsync();
-            //     if (!xrHelper.baseExperience) {
-            //         // XR support is unavailable.
-            //         console.log('WebXR support is unavailable');
-            //     }
-            // }
-            // else {
-            //     console.log('WebXR environment is unavailable');
-            // }
-            // Initialize XR experience with default experience helper.
-            // XR support is available; proceed.
             return scene;
         };
 
@@ -164,11 +143,36 @@ class App {
         }
 
         // Create scene.
-        scene = createScene();
-        scene.then(function (returnedScene) {
-            sceneToRender = returnedScene;
-        });
+        scene = await createScene();
+        sceneToRender = scene;
+        // scene.then(function (returnedScene) {
+        // sceneToRender = returnedScene;
+        // });
         // scene.useRightHandedSystem;
+            // Create a default environment for the scene.
+            scene.createDefaultEnvironment();
+            const env = scene.createDefaultEnvironment();
+            // here we add XR support
+            // var xrHelper = null;
+            if (env != null) {
+                const xrHelper = await scene.createDefaultXRExperienceAsync({
+                    floorMeshes: [<BABYLON.AbstractMesh>env.ground],
+                    disableDefaultUI: false
+                });
+                // Initialize XR experience with default experience helper.
+                // XR support is available; proceed.
+                const sessionManager = await xrHelper.enterExitUI;
+                // .("immersive-vr", "local-floor" /*, optionalRenderTarget */ );
+
+            // const xrHelper = await scene.createDefaultXRExperienceAsync();
+                if (!xrHelper.baseExperience) {
+                    // XR support is unavailable.
+                    console.log('WebXR support is unavailable');
+                }
+            }
+            else {
+                console.log('WebXR environment is unavailable');
+            }
 
         // Run render loop to render future frames.
         engine.runRenderLoop(function () {
@@ -176,18 +180,35 @@ class App {
                 sceneToRender.render();
             }
         });
+        var ifc = new IFCLOADER.IfcLoader();
+        ifc.initialize();
+
+        var filesInput = new BABYLON.FilesInput(engine, null, scene, null, null, null, function () {
+            BABYLON.Tools.ClearLogCache()
+        }, null, null);
+        filesInput.onProcessFileCallback = (function (file: File, name, extension) {
+            console.log("Reading file: " + name);
+            file.text().then (buf=> {
+                ifc.load(name, buf, sceneToRender).then(()=>
+                {
+                    console.log("Done processing file: " + name);
+                }
+            );  
+            });
+            // file.arrayBuffer().then(res=>{
+            //     console.log("File length: " + res.byteLength);
+            //     var ifcdata = res.slice(0);;
+            //     ifc.load(name, ifcdata, sceneToRender);    
+            // });             
+            return true;
+        }).bind(this);
+        filesInput.monitorElementForDragNDrop(canvas);
 
         // Handle browser resize.
         window.addEventListener('resize', function () {
             engine.resize();
         });
-
-        var ifc = new IFCLOADER.IfcLoader();
-        await ifc.initialize();
-        // sceneToRender.useRightHandedSystem;        
-
-        // ifc.load("https://raw.githubusercontent.com/buildingSMART/IfcDoc/master/IfcKit/examples/building-element-configuration/wall-with-opening-and-window.ifc");
-        ifc.load("test.ifc", sampleIfc, sceneToRender);
+        ifc.load(name, sampleIfc, sceneToRender);
     }
     constructor() {
         // create the canvas html element and attach it to the webpage

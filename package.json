@@ -2,7 +2,7 @@
   "name": "webuildifc",
   "version": "1.0.0",
   "description": "Collaborative world building experience in WebXR, using Babylon.js",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
     "init": "cp node_modules/web-ifc/web-ifc.wasm public/web-ifc.wasm",
     "build": "webpack",
@@ -33,6 +33,7 @@
   "dependencies": {
     "babylonjs": "^4.2.0",
     "babylonjs-gui": "^4.2.0",
+    "source-map-loader": "^2.0.1",
     "wasm-pack": "^0.9.1",
     "web-ifc": "0.0.17"
   }

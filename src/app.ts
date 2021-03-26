@@ -36,6 +36,8 @@ class App {
     //     return scene;
     // };
 
+    public mesh;
+
     public async createContent() {
         // Identify canvas element to script.
         //   let canvas = document.getElementById('canvas');
@@ -81,18 +83,21 @@ class App {
 
             // Create a light and aim it vertically to the sky (0, 1, 0).
             let light = new BABYLON.HemisphericLight('light-1', new BABYLON.Vector3(0, 1, 0), scene);
+            let downlight = new BABYLON.HemisphericLight('light-2', new BABYLON.Vector3(0, -1, 0), scene);
 
             // Set light intensity to a lower value (default is 1).
-            light.intensity = 0.8;
+            light.intensity = 0.9;
+            downlight.intensity = 0.8;
 
-            var dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, -1), scene);
-            dirLight.position.y = 8;
-            dirLight.position.z = 2;
-            dirLight.intensity = 10;
-            var dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, 1), scene);
-            dirLight.position.y = 8;
-            dirLight.position.z = 2;
-            dirLight.intensity = 10;
+            // var dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, -1), scene);
+            // dirLight.position.y = 8;
+            // dirLight.position.z = 2;
+            // dirLight.intensity = 10;
+            // var dirLight = new BABYLON.DirectionalLight("dirLight-2", new BABYLON.Vector3(0, -1, 1), scene);
+            // dirLight.position.y = 8;
+            // dirLight.position.z = 2;
+            // dirLight.intensity = 10;
+
             // // Add one of Babylon's built-in sphere shapes.
             // let sphere = BABYLON.MeshBuilder.CreateSphere('sphere-1', {
             //     diameter: 2,
@@ -156,7 +161,7 @@ class App {
             // var xrHelper = null;
             if (env != null) {
                 const xrHelper = await scene.createDefaultXRExperienceAsync({
-                    floorMeshes: [<BABYLON.AbstractMesh>env.ground],
+                    // floorMeshes: [<BABYLON.AbstractMesh>env.ground],
                     disableDefaultUI: false
                 });
                 // Initialize XR experience with default experience helper.
@@ -186,10 +191,17 @@ class App {
         var filesInput = new BABYLON.FilesInput(engine, null, scene, null, null, null, function () {
             BABYLON.Tools.ClearLogCache()
         }, null, null);
-        filesInput.onProcessFileCallback = (function (file: File, name, extension) {
+        filesInput.onProcessFileCallback = (file: File, name, extension) => {
             console.log("Reading file: " + name);
             file.text().then (buf=> {
-                ifc.load(name, buf, sceneToRender).then(()=>
+                // delete existing objects
+                try {
+                    this.mesh.dispose();
+                }
+                catch {
+                    //
+                }
+                this.mesh =ifc.load(name, buf, sceneToRender).then(()=>
                 {
                     console.log("Done processing file: " + name);
                 }
@@ -201,14 +213,15 @@ class App {
             //     ifc.load(name, ifcdata, sceneToRender);    
             // });             
             return true;
-        }).bind(this);
+        };
+        //.bind(this);
         filesInput.monitorElementForDragNDrop(canvas);
 
         // Handle browser resize.
         window.addEventListener('resize', function () {
             engine.resize();
         });
-        ifc.load(name, sampleIfc, sceneToRender);
+        this.mesh = await ifc.load(name, sampleIfc, sceneToRender);
     }
     constructor() {
         // create the canvas html element and attach it to the webpage

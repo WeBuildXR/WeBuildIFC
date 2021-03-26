@@ -10,11 +10,14 @@ module.exports = {
     entry: path.resolve(appDirectory, "src/app.ts"), //path to the main .ts file
 	output: {
 		webassemblyModuleFilename: "[name].wasm",
-        filename: "bundle.js", //name for the js file that is created/compiled in memory
+        chunkFilename: '[id].[chunkhash].js',
+        // filename: "bundle.js", //name for the js file that is created/compiled in memory
         // path: path.resolve(__dirname, "/public/assets/"),
         path: path.resolve(__dirname, "dist"),
 		// publicPath: "/assets/"
+        sourceMapFilename: "[name].js.map"
 	},
+    devtool: "source-map",
     resolve: {
         extensions: [".tsx", ".ts", ".js", ".wasm"],
         fallback: {

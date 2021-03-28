@@ -154,6 +154,52 @@ export class IfcLoader {
 
         vertexData.uvs = uvs;
 
+        var uvBuffer = vertexData.uvs;
+    
+        /*
+            UPDATING UVs
+        */
+        var getVec3FromBuffer = function(buffer,index){
+            return new BABYLON.Vector3(buffer[index],buffer[index+1],buffer[index+2]);
+        }
+
+        var vertexPositions = vertexData.positions;
+        var vertexNormals = vertexData.normals
+        
+        var numberOfVertices = vertexPositions.length/3;
+        for(var i = 0; i < numberOfVertices; i++){
+            var normal   = getVec3FromBuffer(vertexNormals,i*3);
+            var position = getVec3FromBuffer(vertexPositions,i*3);
+            var u = 0.0;
+            var v = 0.0;
+
+            if(normal.equalsWithEpsilon(BABYLON.Vector3.Up())){
+                u = position.x;
+                v = position.z;
+            } else if (normal.equalsWithEpsilon(BABYLON.Vector3.Down())) {
+                u = position.x;
+                v = position.z;
+            } else if (normal.equalsWithEpsilon(BABYLON.Vector3.Left())) {
+                u = position.y;
+                v = position.z;
+            } else if (normal.equalsWithEpsilon(BABYLON.Vector3.Right())) {
+                u = position.y;
+                v = position.z;
+            } else if (normal.equalsWithEpsilon(BABYLON.Vector3.Forward())) {
+                u = position.x;
+                v = position.y;
+            } else if (normal.equalsWithEpsilon(BABYLON.Vector3.Backward())) {
+                u = position.x;
+                v = position.y;
+            } else {
+                console.log("Cannot project position into u-v space.")
+            }
+            uvBuffer[i*2]  = u;
+            uvBuffer[i*2+1]= v;
+        }
+        
+        vertexData.uvs = uvBuffer;
+
         return vertexData;
     }
 

@@ -2,6 +2,7 @@ import "@babylonjs/loaders/glTF";
 import * as BABYLON from "@babylonjs/core";
 import * as WEBIFC from "web-ifc/web-ifc-api"
 import { IndicesArray } from "babylonjs/types";
+import img from '../public/Img_2021_03_26_14_15_38.jpg';
 
 export class IfcLoader {
     constructor() {
@@ -142,6 +143,17 @@ export class IfcLoader {
         vertexData.normals = normals;
         vertexData.indices = indices;
 
+        // calculate UVs (i believe this is calculation for plane geometry)
+
+        var uvs = [];
+        for (var p = 0; p<positions.length/3; p++) {
+            uvs.push((positions[3*p] - (-4)), (positions[3*p+2] - (-4)))
+        }
+
+        //create new vertex data and apply it to mesh
+
+        vertexData.uvs = uvs;
+
         return vertexData;
     }
 
@@ -154,6 +166,10 @@ export class IfcLoader {
         myMaterial.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
         myMaterial.backFaceCulling = false;
         myMaterial.disableLighting = true;    
+
+        myMaterial.diffuseTexture = new BABYLON.Texture(img, scene);
+        // myMaterial.ambientTexture = new BABYLON.Texture(img, scene);
+        // myMaterial.emissiveTexture = new BABYLON.Texture(img, scene);
 
         return myMaterial;
     }

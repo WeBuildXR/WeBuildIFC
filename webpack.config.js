@@ -8,7 +8,7 @@ module.exports = {
     output: {
         chunkFilename: '[id].[chunkhash].js',
         // filename: "js/bundle.js", //name for the js file that is created/compiled in memory
-		webassemblyModuleFilename: "[name].wasm",
+        webassemblyModuleFilename: "[name].wasm",
         path: path.resolve(__dirname, "dist"),
     },
     devtool: "eval-source-map",
@@ -16,7 +16,7 @@ module.exports = {
         extensions: [".tsx", ".ts", ".js", ".wasm"],
         fallback: {
             "crypto": false,
-            "fs": false,        
+            "fs": false,
             "browser": false,
             "path": false,
         }
@@ -36,13 +36,21 @@ module.exports = {
                 use: "ts-loader",
                 exclude: /node_modules/,
             },
-			{
+            {
                 test: /\.wasm?$/,
-				type: "webassembly/async"
-			},
+                type: "webassembly/async"
+            },
             {
                 test: /\.ifc?$/,
                 use: 'raw-loader',
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                    },
+                ],
             }
         ],
     },
@@ -55,6 +63,6 @@ module.exports = {
     ],
     mode: "development",
     experiments: {
-		syncWebAssembly: true
-	}
+        syncWebAssembly: true
+    }
 };

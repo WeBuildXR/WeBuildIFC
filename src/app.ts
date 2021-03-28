@@ -221,7 +221,7 @@ class App {
         window.addEventListener('resize', function () {
             engine.resize();
         });
-        this.mesh = await ifc.load(name, sampleIfc, sceneToRender);
+        this.mesh = await ifc.load("Sample model", sampleIfc, sceneToRender);
     }
     constructor() {
         // create the canvas html element and attach it to the webpage

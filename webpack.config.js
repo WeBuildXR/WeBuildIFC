@@ -17,7 +17,7 @@ module.exports = {
 		// publicPath: "/assets/"
         sourceMapFilename: "[name].js.map"
 	},
-    devtool: "source-map",
+    devtool: "eval-source-map",
     resolve: {
         extensions: [".tsx", ".ts", ".js", ".wasm"],
         fallback: {
